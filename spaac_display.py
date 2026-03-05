@@ -297,14 +297,20 @@ class TestButtonDialog(QtWidgets.QDialog):
         self.ir_reader = ir_reader
         self.keymap = keymap
 
+        # Compute scale factor based on screen height
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.screen_height = screen_size.height()
+        self.scale_factor = self.screen_height / 600.0
+
         self.setWindowTitle("SPAAC — Test Remote Buttons")
         self.setModal(True)
-        self.setMinimumSize(500, 350)
+        self.setMinimumSize(int(500 * self.scale_factor), int(350 * self.scale_factor))
 
         layout = QtWidgets.QVBoxLayout(self)
 
         title = QtWidgets.QLabel("Test Remote Buttons")
-        title.setFont(QtGui.QFont("sans-serif", 18, QtGui.QFont.Bold))
+        title.setFont(QtGui.QFont("sans-serif", int(18 * self.scale_factor), QtGui.QFont.Bold))
         title.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(title)
 
@@ -313,7 +319,7 @@ class TestButtonDialog(QtWidgets.QDialog):
             #
             "what function it is mapped to."
         )
-        instructions.setFont(QtGui.QFont("sans-serif", 12))
+        instructions.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
         instructions.setAlignment(QtCore.Qt.AlignCenter)
         instructions.setStyleSheet("color: #555;")
         layout.addWidget(instructions)
@@ -321,7 +327,7 @@ class TestButtonDialog(QtWidgets.QDialog):
         layout.addSpacerItem(QtWidgets.QSpacerItem(20, 20))
 
         self.scancode_label = QtWidgets.QLabel("Scancode: —")
-        self.scancode_label.setFont(QtGui.QFont("monospace", 16))
+        self.scancode_label.setFont(QtGui.QFont("monospace", int(16 * self.scale_factor)))
         self.scancode_label.setAlignment(QtCore.Qt.AlignCenter)
         self.scancode_label.setStyleSheet(
             "background-color: #fff; border: 1px solid #ccc;"
@@ -330,9 +336,9 @@ class TestButtonDialog(QtWidgets.QDialog):
         layout.addWidget(self.scancode_label)
 
         self.function_label = QtWidgets.QLabel("Function: —")
-        self.function_label.setFont(QtGui.QFont("sans-serif", 20, QtGui.QFont.Bold))
+        self.function_label.setFont(QtGui.QFont("sans-serif", int(20 * self.scale_factor), QtGui.QFont.Bold))
         self.function_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.function_label.setMinimumHeight(60)
+        self.function_label.setMinimumHeight(int(60 * self.scale_factor))
         self.function_label.setStyleSheet(
             "background-color: #f0f0f0; border: 1px solid #ccc;"
             " border-radius: 6px; padding: 10px;"
@@ -342,8 +348,8 @@ class TestButtonDialog(QtWidgets.QDialog):
         layout.addSpacerItem(QtWidgets.QSpacerItem(20, 30))
 
         close_btn = QtWidgets.QPushButton("Close")
-        close_btn.setFont(QtGui.QFont("sans-serif", 13))
-        close_btn.setMinimumHeight(44)
+        close_btn.setFont(QtGui.QFont("sans-serif", int(13 * self.scale_factor)))
+        close_btn.setMinimumHeight(int(44 * self.scale_factor))
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
@@ -392,9 +398,15 @@ class TeachDialog(QtWidgets.QDialog):
         for sc, fn in self.keymap.items():
             self.reverse_map[fn] = sc
 
+        # Compute scale factor based on screen height
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.screen_height = screen_size.height()
+        self.scale_factor = self.screen_height / 600.0
+
         self.setWindowTitle("SPAAC — Teach Remote Buttons")
         self.setModal(True)
-        self.setMinimumSize(620, 420)
+        self.setMinimumSize(int(620 * self.scale_factor), int(420 * self.scale_factor))
 
         self._listening_function = None
         self._listen_start_time = 0.0
@@ -411,23 +423,23 @@ class TeachDialog(QtWidgets.QDialog):
         main_layout.setSpacing(4)
 
         title = QtWidgets.QLabel("Teach Remote Buttons")
-        title.setFont(QtGui.QFont("sans-serif", 16, QtGui.QFont.Bold))
+        title.setFont(QtGui.QFont("sans-serif", int(16 * self.scale_factor), QtGui.QFont.Bold))
         title.setAlignment(QtCore.Qt.AlignCenter)
         main_layout.addWidget(title)
 
         instructions = QtWidgets.QLabel(
             'Click "Learn" next to a function, then press the ' "remote button once."
         )
-        instructions.setFont(QtGui.QFont("sans-serif", 10))
+        instructions.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
         instructions.setAlignment(QtCore.Qt.AlignCenter)
         instructions.setStyleSheet("color: #555;")
         main_layout.addWidget(instructions)
 
         # Status bar
         self.status_label = QtWidgets.QLabel("")
-        self.status_label.setFont(QtGui.QFont("sans-serif", 10))
+        self.status_label.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
         self.status_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.status_label.setMinimumHeight(26)
+        self.status_label.setMinimumHeight(int(26 * self.scale_factor))
         self.status_label.setStyleSheet(
             "color: #ffffff; background-color: #444;"
             " border-radius: 6px; padding: 3px;"
@@ -449,7 +461,7 @@ class TeachDialog(QtWidgets.QDialog):
 
         # Left column: control functions
         left_group = QtWidgets.QGroupBox("Controls")
-        left_group.setFont(QtGui.QFont("sans-serif", 10, QtGui.QFont.Bold))
+        left_group.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor), QtGui.QFont.Bold))
         left_grid = QtWidgets.QGridLayout(left_group)
         left_grid.setSpacing(3)
         self._populate_grid(left_grid, FUNCTION_NAMES_CONTROLS)
@@ -457,7 +469,7 @@ class TeachDialog(QtWidgets.QDialog):
 
         # Right column: digit functions
         right_group = QtWidgets.QGroupBox("Digits")
-        right_group.setFont(QtGui.QFont("sans-serif", 10, QtGui.QFont.Bold))
+        right_group.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor), QtGui.QFont.Bold))
         right_grid = QtWidgets.QGridLayout(right_group)
         right_grid.setSpacing(3)
         self._populate_grid(right_grid, FUNCTION_NAMES_DIGITS)
@@ -471,22 +483,22 @@ class TeachDialog(QtWidgets.QDialog):
         btn_layout.setSpacing(8)
 
         clear_all_btn = QtWidgets.QPushButton("Clear All")
-        clear_all_btn.setFont(QtGui.QFont("sans-serif", 12))
-        clear_all_btn.setMinimumHeight(38)
+        clear_all_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        clear_all_btn.setMinimumHeight(int(38 * self.scale_factor))
         clear_all_btn.clicked.connect(self._clear_all_mappings)
         btn_layout.addWidget(clear_all_btn)
 
         btn_layout.addStretch()
 
         save_btn = QtWidgets.QPushButton("Save")
-        save_btn.setFont(QtGui.QFont("sans-serif", 12))
-        save_btn.setMinimumHeight(38)
+        save_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        save_btn.setMinimumHeight(int(38 * self.scale_factor))
         save_btn.clicked.connect(self.accept)
         btn_layout.addWidget(save_btn)
 
         cancel_btn = QtWidgets.QPushButton("Cancel")
-        cancel_btn.setFont(QtGui.QFont("sans-serif", 12))
-        cancel_btn.setMinimumHeight(38)
+        cancel_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        cancel_btn.setMinimumHeight(int(38 * self.scale_factor))
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
 
@@ -504,14 +516,14 @@ class TeachDialog(QtWidgets.QDialog):
 
         for row_idx, fn in enumerate(function_list):
             fn_label = QtWidgets.QLabel(FUNCTION_LABELS.get(fn, fn))
-            fn_label.setFont(QtGui.QFont("sans-serif", 10))
+            fn_label.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
             grid.addWidget(fn_label, row_idx, 0)
 
             sc_str = self.reverse_map.get(fn, "—")
             sc_label = QtWidgets.QLabel(sc_str)
-            sc_label.setFont(QtGui.QFont("monospace", 10))
+            sc_label.setFont(QtGui.QFont("monospace", int(10 * self.scale_factor)))
             sc_label.setAlignment(QtCore.Qt.AlignCenter)
-            sc_label.setMinimumWidth(60)
+            sc_label.setMinimumWidth(int(60 * self.scale_factor))
             sc_label.setStyleSheet(
                 "background-color: #fff; border: 1px solid #ddd;"
                 " border-radius: 3px; padding: 1px 4px;"
@@ -519,15 +531,15 @@ class TeachDialog(QtWidgets.QDialog):
             grid.addWidget(sc_label, row_idx, 1)
 
             learn_btn = QtWidgets.QPushButton("Learn")
-            learn_btn.setFont(QtGui.QFont("sans-serif", 9))
-            learn_btn.setMinimumHeight(26)
+            learn_btn.setFont(QtGui.QFont("sans-serif", int(9 * self.scale_factor)))
+            learn_btn.setMinimumHeight(int(26 * self.scale_factor))
             learn_btn.clicked.connect(lambda checked, f=fn: self._start_listening(f))
             grid.addWidget(learn_btn, row_idx, 2)
 
             clear_btn = QtWidgets.QPushButton("✕")
-            clear_btn.setFont(QtGui.QFont("sans-serif", 9))
-            clear_btn.setFixedWidth(28)
-            clear_btn.setMinimumHeight(26)
+            clear_btn.setFont(QtGui.QFont("sans-serif", int(9 * self.scale_factor)))
+            clear_btn.setFixedWidth(int(28 * self.scale_factor))
+            clear_btn.setMinimumHeight(int(26 * self.scale_factor))
             clear_btn.setToolTip("Remove mapping")
             clear_btn.clicked.connect(lambda checked, f=fn: self._clear_mapping(f))
             grid.addWidget(clear_btn, row_idx, 3)
@@ -679,21 +691,27 @@ class SettingsDialog(QtWidgets.QDialog):
         self.keymap = dict(keymap)
         self.ir_reader = ir_reader
 
+        # Compute scale factor based on screen height
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.screen_height = screen_size.height()
+        self.scale_factor = self.screen_height / 600.0
+
         self.setWindowTitle("SPAAC — Settings")
         self.setModal(True)
-        self.setMinimumSize(620, 460)
+        self.setMinimumSize(int(620 * self.scale_factor), int(460 * self.scale_factor))
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setSpacing(4)
 
         title = QtWidgets.QLabel("Settings")
-        title.setFont(QtGui.QFont("sans-serif", 18, QtGui.QFont.Bold))
+        title.setFont(QtGui.QFont("sans-serif", int(18 * self.scale_factor), QtGui.QFont.Bold))
         title.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(title)
 
         # --- Repeat delay ---
         delay_label = QtWidgets.QLabel("Repeat Delay (ms before repeat starts):")
-        delay_label.setFont(QtGui.QFont("sans-serif", 11))
+        delay_label.setFont(QtGui.QFont("sans-serif", int(11 * self.scale_factor)))
         layout.addWidget(delay_label)
 
         self.delay_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
@@ -705,7 +723,7 @@ class SettingsDialog(QtWidgets.QDialog):
         layout.addWidget(self.delay_slider)
 
         self.delay_value_label = QtWidgets.QLabel(f"{self.delay_slider.value()} ms")
-        self.delay_value_label.setFont(QtGui.QFont("sans-serif", 10))
+        self.delay_value_label.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
         self.delay_value_label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.delay_value_label)
         self.delay_slider.valueChanged.connect(
@@ -714,7 +732,7 @@ class SettingsDialog(QtWidgets.QDialog):
 
         # --- Repeat rate ---
         rate_label = QtWidgets.QLabel("Repeat Rate (ms between repeats):")
-        rate_label.setFont(QtGui.QFont("sans-serif", 11))
+        rate_label.setFont(QtGui.QFont("sans-serif", int(11 * self.scale_factor)))
         layout.addWidget(rate_label)
 
         self.rate_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
@@ -726,7 +744,7 @@ class SettingsDialog(QtWidgets.QDialog):
         layout.addWidget(self.rate_slider)
 
         self.rate_value_label = QtWidgets.QLabel(f"{self.rate_slider.value()} ms")
-        self.rate_value_label.setFont(QtGui.QFont("sans-serif", 10))
+        self.rate_value_label.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
         self.rate_value_label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.rate_value_label)
         self.rate_slider.valueChanged.connect(
@@ -735,7 +753,7 @@ class SettingsDialog(QtWidgets.QDialog):
 
         # --- Posture duration ---
         posture_label = QtWidgets.QLabel("Posture Display Duration (seconds, 0 = stays on):")
-        posture_label.setFont(QtGui.QFont("sans-serif", 11))
+        posture_label.setFont(QtGui.QFont("sans-serif", int(11 * self.scale_factor)))
         layout.addWidget(posture_label)
 
         self.posture_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
@@ -750,7 +768,7 @@ class SettingsDialog(QtWidgets.QDialog):
         self.posture_value_label = QtWidgets.QLabel(
             "Always on" if posture_val == 0 else f"{posture_val} sec"
         )
-        self.posture_value_label.setFont(QtGui.QFont("sans-serif", 10))
+        self.posture_value_label.setFont(QtGui.QFont("sans-serif", int(10 * self.scale_factor)))
         self.posture_value_label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.posture_value_label)
         self.posture_slider.valueChanged.connect(self._update_posture_label)
@@ -761,14 +779,14 @@ class SettingsDialog(QtWidgets.QDialog):
         action_layout = QtWidgets.QHBoxLayout()
 
         teach_btn = QtWidgets.QPushButton("🎓  Teach Buttons")
-        teach_btn.setFont(QtGui.QFont("sans-serif", 12))
-        teach_btn.setMinimumHeight(44)
+        teach_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        teach_btn.setMinimumHeight(int(44 * self.scale_factor))
         teach_btn.clicked.connect(self._open_teach)
         action_layout.addWidget(teach_btn)
 
         test_btn = QtWidgets.QPushButton("🔍  Test Buttons")
-        test_btn.setFont(QtGui.QFont("sans-serif", 12))
-        test_btn.setMinimumHeight(44)
+        test_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        test_btn.setMinimumHeight(int(44 * self.scale_factor))
         test_btn.clicked.connect(self._open_test)
         action_layout.addWidget(test_btn)
 
@@ -779,14 +797,14 @@ class SettingsDialog(QtWidgets.QDialog):
         # --- Save / Cancel ---
         btn_layout = QtWidgets.QHBoxLayout()
         ok_btn = QtWidgets.QPushButton("Save")
-        ok_btn.setFont(QtGui.QFont("sans-serif", 12))
-        ok_btn.setMinimumHeight(40)
+        ok_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        ok_btn.setMinimumHeight(int(40 * self.scale_factor))
         ok_btn.clicked.connect(self._save)
         btn_layout.addWidget(ok_btn)
 
         cancel_btn = QtWidgets.QPushButton("Cancel")
-        cancel_btn.setFont(QtGui.QFont("sans-serif", 12))
-        cancel_btn.setMinimumHeight(40)
+        cancel_btn.setFont(QtGui.QFont("sans-serif", int(12 * self.scale_factor)))
+        cancel_btn.setMinimumHeight(int(40 * self.scale_factor))
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(cancel_btn)
 
@@ -846,6 +864,12 @@ class MainDisplay(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Compute scale factor based on screen height (base: 600 for 7-inch display)
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.screen_height = screen_size.height()
+        self.scale_factor = self.screen_height / 600.0
+
         self.config = load_json(CONFIG_FILE, DEFAULT_CONFIG)
         for k, v in DEFAULT_CONFIG.items():
             if k not in self.config:
@@ -901,23 +925,23 @@ class MainDisplay(QtWidgets.QMainWindow):
 
         # --- Posture label (top) ---
         self.posture_label = QtWidgets.QLabel("")
-        self.posture_label.setFont(QtGui.QFont("sans-serif", 48, QtGui.QFont.Bold))
+        self.posture_label.setFont(QtGui.QFont("sans-serif", int(48 * self.scale_factor), QtGui.QFont.Bold))
         self.posture_label.setAlignment(QtCore.Qt.AlignCenter)
         self.posture_label.setStyleSheet(f"color: {text_color};")
-        self.posture_label.setMinimumHeight(60)
+        self.posture_label.setMinimumHeight(int(60 * self.scale_factor))
         layout.addWidget(self.posture_label, stretch=1)
 
         # --- Page number and dial overlay (stacked, center, dominant) ---
         stacked = QtWidgets.QStackedWidget()
         
         self.page_label = QtWidgets.QLabel("1")
-        self.page_label.setFont(QtGui.QFont("sans-serif", 180, QtGui.QFont.Bold))
+        self.page_label.setFont(QtGui.QFont("sans-serif", int(180 * self.scale_factor), QtGui.QFont.Bold))
         self.page_label.setAlignment(QtCore.Qt.AlignCenter)
         self.page_label.setStyleSheet(f"color: {text_color};")
         stacked.addWidget(self.page_label)
         
         self.dial_label = QtWidgets.QLabel("")
-        self.dial_label.setFont(QtGui.QFont("sans-serif", 180, QtGui.QFont.Bold))
+        self.dial_label.setFont(QtGui.QFont("sans-serif", int(180 * self.scale_factor), QtGui.QFont.Bold))
         self.dial_label.setAlignment(QtCore.Qt.AlignCenter)
         self.dial_label.setStyleSheet(
             "color: #ffffff; background-color: rgba(0,0,0,0.8);"
@@ -933,8 +957,8 @@ class MainDisplay(QtWidgets.QMainWindow):
         bottom_layout = QtWidgets.QHBoxLayout()
         bottom_layout.addStretch()
         self.settings_btn = QtWidgets.QPushButton("⚙")
-        self.settings_btn.setFont(QtGui.QFont("sans-serif", 18))
-        self.settings_btn.setFixedSize(50, 50)
+        self.settings_btn.setFont(QtGui.QFont("sans-serif", int(18 * self.scale_factor)))
+        self.settings_btn.setFixedSize(int(50 * self.scale_factor), int(50 * self.scale_factor))
         self.settings_btn.setStyleSheet(
             "QPushButton { background-color: rgba(255,255,255,0.15);"
             " color: #ccc; border: 1px solid #555; border-radius: 8px; }"
