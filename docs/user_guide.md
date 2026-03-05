@@ -17,7 +17,6 @@ In normal operation the screen shows:
 - **Settings button** — a small gear icon (⚙) in the lower-right corner of the
   screen, reachable by touch.
 
-> **Screenshot placeholder**
 > ![Main display screen](screenshots/main_display.png)
 > *Normal display: page 142, no posture cue.*
 
@@ -63,7 +62,6 @@ delay (configurable in Settings).
 4. If you do nothing for 8 seconds the dial entry is automatically cancelled.
 5. Press **BACKSPACE** to erase the last digit without cancelling.
 
-> **Screenshot placeholder**
 > ![Dial mode](screenshots/dial_mode.png)
 > *Dialing "142" before pressing ENTER.*
 
@@ -84,7 +82,6 @@ Press the same button a second time to clear the cue.
 If the Settings > Posture duration is set to a non-zero value the cue will
 automatically clear after that many seconds.
 
-> **Screenshot placeholder**
 > ![Stand posture](screenshots/posture_stand.png)
 > *Display showing "PLEASE STAND" above page 142.*
 
@@ -95,7 +92,6 @@ automatically clear after that many seconds.
 Touch the **⚙** button in the lower-right corner (or press the remote button
 mapped to "Setup") to open the settings dialog.
 
-> **Screenshot placeholder**
 > ![Settings dialog](screenshots/settings_dialog.png)
 
 ### Repeat Delay
@@ -132,8 +128,8 @@ Opens [Test Mode](#test-mode) to verify your button assignments.
 
 Teach mode lets you assign any button on your remote to any application function.
 
-> **Screenshot placeholder**
 > ![Teach mode dialog](screenshots/teach_mode.png)
+> Teach mode dialog with most buttons trained.
 
 1. Open Settings, then tap **Teach Buttons**.
 2. The dialog shows two columns: *Controls* on the left and *Digits* on the right.
@@ -156,8 +152,8 @@ Teach mode lets you assign any button on your remote to any application function
 
 Test mode lets you verify your button assignments without changing any pages.
 
-> **Screenshot placeholder**
 > ![Test mode dialog](screenshots/test_mode.png)
+> Test mode showing remote's *Enter/Accept* button pressed.
 
 1. Open Settings, then tap **Test Buttons**.
 2. Press any button on the remote.
