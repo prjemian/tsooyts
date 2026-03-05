@@ -58,22 +58,22 @@ see **no events at all**, continue to Step 4.
 cat /sys/class/rc/rc0/protocols
 ```
 
-On a correctly configured system all (or most) protocols are shown in brackets:
-
-```
-[rc-5] [nec] [rc-6] [jvc] [sony] [rc-5-sz] [sanyo] [sharp] [mce_kbd] [xmp] [imon] [lirc]
-```
-
-If only one or two are in brackets (e.g., `[rc-6] [lirc]`), the other decoder
-kernel modules are not loaded.
+On a freshly booted system only `[lirc]` may be in brackets — this is normal
+on kernel 6.12.  Enable all decoders with `ir-keytable`:
 
 **Enable all decoders (session, does not survive reboot):**
 
 ```bash
-sudo bash -c 'echo "rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon lirc" > /sys/class/rc/rc0/protocols'
+sudo ir-keytable -s rc0 -p all
+cat /sys/class/rc/rc0/protocols
 ```
 
-**Load decoder modules permanently:**
+All protocols should now appear in brackets.
+
+> **Note:** Writing directly to `/sys/class/rc/rc0/protocols` does not work on
+> kernel 6.12 even with decoder modules loaded.  Use `ir-keytable` instead.
+
+**Load decoder modules and activate permanently:**
 
 ```bash
 sudo modprobe ir_nec_decoder
@@ -82,7 +82,8 @@ sudo modprobe ir_sony_decoder
 sudo modprobe ir_jvc_decoder
 ```
 
-Then add these to `/etc/modules-load.d/ir-decoders.conf` (see
+Then add these to `/etc/modules-load.d/ir-decoders.conf` and enable the
+`ir-protocols` systemd service to activate them at boot (see
 [Installation Guide](installation_guide.md#enable-all-ir-protocol-decoders)).
 
 After loading, re-run the evdev test in Step 3.
@@ -223,13 +224,6 @@ content.  See the touchscreen rotation section in the
   the official 7" screen).
 - Try a different power supply — insufficient current causes display issues.
 
-### Page number text is cut off or too large
-
-The application scales fonts based on screen height.  If the Pi is connected to
-an unexpected display (e.g., during setup via HDMI), the font sizes will differ
-from the 7" screen.  This corrects itself when the 7" touchscreen is the active
-display.
-
 ---
 
 ## Application Behavior Issues
@@ -264,6 +258,13 @@ The dial entry auto-cancels after 8 seconds of inactivity.  If it is cancelling
 too quickly, check that the remote's digit buttons are taught correctly in Teach
 Mode.
 
+### Page number text is cut off or too large
+
+The application scales fonts based on screen height.  If the Pi is connected to
+an unexpected display (e.g., during setup via HDMI), the font sizes will differ
+from the 7" screen.  This corrects itself when the 7" touchscreen is the active
+display.
+
 ---
 
 ## Diagnostic Commands Summary
@@ -279,7 +280,7 @@ python3 -m evdev.evtest
 cat /sys/class/rc/rc0/protocols
 
 # Enable all IR decoders (session only)
-sudo bash -c 'echo "rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon lirc" > /sys/class/rc/rc0/protocols'
+sudo ir-keytable -s rc0 -p all
 
 # Load NEC decoder module
 sudo modprobe ir_nec_decoder

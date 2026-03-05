@@ -189,6 +189,15 @@ Look for a block containing `Name="gpio_ir_recv"`.  The `Handlers=` line in
 that block shows the assigned event node, for example `event0`.  The exact
 number may vary between boots or Pi models.
 
+### Install IR Diagnostic Tools
+
+```bash
+sudo apt install -y ir-keytable v4l-utils
+```
+
+These provide `ir-keytable` and `ir-ctl` for testing and diagnosing the IR
+receiver (see [Troubleshooting](troubleshooting.md)).
+
 ### Enable All IR Protocol Decoders
 
 The application reads raw scancodes directly from evdev and does not require a
@@ -202,10 +211,10 @@ cat /sys/class/rc/rc0/protocols
 ```
 
 On a correctly configured system all protocols are shown in brackets `[…]`.
-If some are missing, enable them:
+If some are missing, enable them using `ir-keytable`:
 
 ```bash
-sudo bash -c 'echo "rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon lirc" > /sys/class/rc/rc0/protocols'
+sudo ir-keytable -s rc0 -p all
 ```
 
 Verify:
@@ -213,6 +222,9 @@ Verify:
 ```bash
 cat /sys/class/rc/rc0/protocols
 ```
+
+> **Note:** On kernel 6.12, writing directly to the `protocols` sysfs file does
+> not activate decoders even with modules loaded.  Use `ir-keytable` instead.
 
 To make this persistent across reboots, load the kernel decoder modules at boot.
 Create a modules-load configuration file:
@@ -231,20 +243,34 @@ ir_sony_decoder
 ir_jvc_decoder
 ```
 
-Alternatively, add the protocol echo command to `/etc/rc.local` before `exit 0`:
+To activate the protocols at every boot, create a systemd oneshot service
+(`/etc/rc.local` does not exist by default on modern Raspberry Pi OS):
 
 ```bash
-echo "rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon lirc" > /sys/class/rc/rc0/protocols
+sudo tee /etc/systemd/system/ir-protocols.service << 'EOF'
+[Unit]
+Description=Enable IR protocol decoders
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ir-keytable -s rc0 -p all
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable ir-protocols.service
+sudo systemctl start ir-protocols.service
 ```
 
-### Install IR Diagnostic Tools
+Verify the service started cleanly:
 
 ```bash
-sudo apt install -y ir-keytable v4l-utils
+sudo systemctl status ir-protocols.service
 ```
-
-These provide `ir-keytable` and `ir-ctl` for testing and diagnosing the IR
-receiver (see [Troubleshooting](troubleshooting.md)).
 
 ---
 
