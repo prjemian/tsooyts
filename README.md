@@ -19,7 +19,22 @@ other KVM inputs.
 
 ## Install wallpaper
 
-Edit 
+Change the stock background image.
+
+### Newer RPi models an OS
+
+Using the touchscreen, click through these menus:
+
+- Raspberry
+- Preferences
+- Control Centre
+- Desktop
+- Picture
+- navigate the file dialog to the new image
+
+### Older RPi using LXDE
+
+Edit  ...
 
 ```bash
 nano ~/.config/pcmanfm/LXDE-pi/desktop-items-0.conf
