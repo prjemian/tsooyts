@@ -863,12 +863,11 @@ class MainDisplay(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Compute scale factor based on screen height (base: 600 for 7-inch display).
-        # Use linear scaling so the layout proportions remain constant on any screen.
+        # Compute scale factor based on screen height (base: 600 for 7-inch display)
         screen = QtWidgets.QApplication.primaryScreen()
         screen_size = screen.size()
         self.screen_height = screen_size.height()
-        self.scale_factor = self.screen_height / 600.0
+        self.scale_factor = min((self.screen_height / 600.0) ** 0.7, 1.5)
 
         self.config = load_json(CONFIG_FILE, DEFAULT_CONFIG)
         for k, v in DEFAULT_CONFIG.items():
@@ -921,8 +920,7 @@ class MainDisplay(QtWidgets.QMainWindow):
         central.setStyleSheet(f"background-color: {book_color};")
 
         layout = QtWidgets.QVBoxLayout(central)
-        sf = self.scale_factor
-        layout.setContentsMargins(int(20 * sf), int(10 * sf), int(20 * sf), int(10 * sf))
+        layout.setContentsMargins(20, 10, 20, 10)
 
         # --- Posture label (top) ---
         self.posture_label = QtWidgets.QLabel("")
