@@ -884,14 +884,15 @@ class MainDisplay(QtWidgets.QMainWindow):
         self.posture_label.setMinimumHeight(60)
         layout.addWidget(self.posture_label, stretch=1)
 
-        # --- Page number (center, dominant) ---
+        # --- Page number and dial overlay (stacked, center, dominant) ---
+        stacked = QtWidgets.QStackedWidget()
+        
         self.page_label = QtWidgets.QLabel("1")
         self.page_label.setFont(QtGui.QFont("sans-serif", 180, QtGui.QFont.Bold))
         self.page_label.setAlignment(QtCore.Qt.AlignCenter)
         self.page_label.setStyleSheet(f"color: {text_color};")
-        layout.addWidget(self.page_label, stretch=6)
-
-        # --- Dial overlay label ---
+        stacked.addWidget(self.page_label)
+        
         self.dial_label = QtWidgets.QLabel("")
         self.dial_label.setFont(QtGui.QFont("sans-serif", 180, QtGui.QFont.Bold))
         self.dial_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -899,8 +900,11 @@ class MainDisplay(QtWidgets.QMainWindow):
             "color: #ffffff; background-color: rgba(0,0,0,0.8);"
             " border-radius: 12px; padding: 10px;"
         )
-        self.dial_label.setVisible(False)
-        layout.addWidget(self.dial_label, stretch=6)
+        stacked.addWidget(self.dial_label)
+        stacked.setCurrentIndex(0)  # Start with page_label visible
+        self.stacked = stacked
+        
+        layout.addWidget(stacked, stretch=6)
 
         # --- Settings button (small, bottom-right, touch accessible) ---
         bottom_layout = QtWidgets.QHBoxLayout()
@@ -1012,12 +1016,12 @@ class MainDisplay(QtWidgets.QMainWindow):
         if not self.is_dialing:
             self.is_dialing = True
             self.dialing_digits = ""
+            self.stacked.setCurrentIndex(1)  # Show dial_label
 
         if len(self.dialing_digits) < 4:
             self.dialing_digits += digit
 
         self.dial_label.setText(self.dialing_digits)
-        self.dial_label.setVisible(True)
 
         self.dial_timer.start(8000)
 
@@ -1039,14 +1043,14 @@ class MainDisplay(QtWidgets.QMainWindow):
         self.current_page = page
         self.is_dialing = False
         self.dialing_digits = ""
-        self.dial_label.setVisible(False)
+        self.stacked.setCurrentIndex(0)  # Show page_label
         self.dial_timer.stop()
         self._update_display()
 
     def _cancel_dial(self):
         self.is_dialing = False
         self.dialing_digits = ""
-        self.dial_label.setVisible(False)
+        self.stacked.setCurrentIndex(0)  # Show page_label
         self.dial_timer.stop()
 
     def _backspace_dial(self):
