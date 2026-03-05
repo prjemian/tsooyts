@@ -8,7 +8,6 @@ Controlled via IR remote through evdev (EV_MSC/MSC_SCAN scancodes).
 """
 
 import json
-import os
 import select
 import sys
 import threading
