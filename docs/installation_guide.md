@@ -50,7 +50,7 @@ pinout (left to right) is:
 [OUT] [GND] [VCC]
 ```
 
-> Check your module's datasheet — pin order varies between manufacturers.
+> Check your module's datasheet — [pin order](https://pinout.xyz) varies between manufacturers.
 
 Connect the pins to the Raspberry Pi GPIO header:
 
