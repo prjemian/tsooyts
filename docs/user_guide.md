@@ -1,8 +1,8 @@
 # SPAAC Page Display — User Guide
 
-The SPAAC page display system shows the current hymnal page number and congregation
+The SPAAC page display system shows the current page number and congregation
 posture cues on a large screen so the entire congregation can follow along.  The
-display is controlled by a TV remote held by a minister or acolyte.
+display is controlled by a TV remote held by an altar server.
 
 ---
 

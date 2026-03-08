@@ -34,7 +34,7 @@ DEFAULT_CONFIG = {
     "max_repeats_per_sec": 10,  # upper bound for settings UI
     "min_page": 1,
     "max_page": 999,
-    "book_color": "#1a3a5c",  # dark blue, like a blue hymnal
+    "book_color": "#1a3a5c",  # dark blue
     "text_color": "#f0e6c8",  # warm cream/ivory
     "posture_stand_color": "#c8a84e",
     "posture_sit_color": "#6b8f6b",

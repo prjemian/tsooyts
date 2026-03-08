@@ -10,7 +10,7 @@ boot.
 
 | Qty | Item | Notes |
 |-----|------|-------|
-| 1 | Raspberry Pi 3B, 3B+, or 4 | Tested on Pi 3B+ ("acolyte"); first developed on a 2B (not recommended) |
+| 1 | Raspberry Pi 3B, 3B+, or 4 | Tested on Pi 3 model B+; first developed on a 2 model B (not recommended) |
 | 1 | 7" Official Raspberry Pi Touchscreen Display | DSI ribbon cable included |
 | 1 | Raspberry Pi Display Case (optional) | Any case that exposes the touchscreen |
 | 1 | IR receiver module | TSOP38238 or VS1838B (3-pin: VCC, GND, OUT); or a pre-wired module on a breakout board |
@@ -102,7 +102,7 @@ Install the official Raspberry Pi Imager on your desktop/laptop:
 
 Click the **gear icon** (Advanced options) in Raspberry Pi Imager and set:
 
-- **Hostname:** e.g., `spaac` or `acolyte`
+- **Hostname:** e.g., `page` or `spaac`
 - **Enable SSH:** yes (password authentication)
 - **Username:** `pi`  (or your preferred name — adjust file paths below accordingly)
 - **Password:** set a strong password
