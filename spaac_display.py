@@ -1236,10 +1236,17 @@ class MainDisplay(QtWidgets.QMainWindow):
             self._open_settings()
 
     def _change_page(self, delta):
-        """Increment or decrement the current page by delta, clamped to configured bounds."""
+        """Increment or decrement the current page by delta, clamped to configured bounds.
+
+        While blanked, the first press unblanks and shows the current page
+        without changing the page number.
+        """
         if self.is_dialing:
             self._cancel_dial()
-        self.is_blank = False
+        if self.is_blank:
+            self.is_blank = False
+            self._update_display()
+            return
         min_p = self.config.get("min_page", 1)
         max_p = self.config.get("max_page", 999)
         self.current_page = max(min_p, min(max_p, self.current_page + delta))
