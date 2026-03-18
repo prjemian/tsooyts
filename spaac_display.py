@@ -568,6 +568,13 @@ class SettingsDialog(QtWidgets.QDialog):
         self.posture_slider.valueChanged.connect(self._update_posture_label)
 
         layout.addStretch()
+
+        reset_btn = QtWidgets.QPushButton("Reset to Defaults")
+        reset_btn.setFont(QtGui.QFont("sans-serif", int(11 * sf)))
+        reset_btn.setMinimumHeight(int(34 * sf))
+        reset_btn.clicked.connect(self._reset_settings_defaults)
+        layout.addWidget(reset_btn)
+
         return page
 
     def _build_colors_tab(self):
@@ -620,6 +627,13 @@ class SettingsDialog(QtWidgets.QDialog):
 
         layout.addLayout(color_grid)
         layout.addStretch()
+
+        reset_btn = QtWidgets.QPushButton("Reset to Defaults")
+        reset_btn.setFont(QtGui.QFont("sans-serif", int(11 * sf)))
+        reset_btn.setMinimumHeight(int(34 * sf))
+        reset_btn.clicked.connect(self._reset_colors_defaults)
+        layout.addWidget(reset_btn)
+
         return page
 
     def _build_teach_tab(self):
@@ -949,6 +963,21 @@ class SettingsDialog(QtWidgets.QDialog):
         if color.isValid():
             self._color_values[key] = color.name()
             self._apply_color_btn_style(self._color_btns[key], color.name())
+
+    # ---- reset helpers ----------------------------------------------------
+
+    def _reset_settings_defaults(self):
+        """Reset the Settings tab sliders to their DEFAULT_CONFIG values."""
+        self.delay_slider.setValue(DEFAULT_CONFIG["repeat_delay_ms"])
+        self.rate_slider.setValue(DEFAULT_CONFIG["repeat_rate_ms"])
+        self.posture_slider.setValue(DEFAULT_CONFIG["posture_duration_sec"])
+
+    def _reset_colors_defaults(self):
+        """Reset the Colors tab swatches to their DEFAULT_CONFIG values."""
+        for key in self._color_values:
+            default = DEFAULT_CONFIG[key]
+            self._color_values[key] = default
+            self._apply_color_btn_style(self._color_btns[key], default)
 
     # ---- general helpers --------------------------------------------------
 
