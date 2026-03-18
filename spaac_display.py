@@ -1055,20 +1055,15 @@ class MainDisplay(QtWidgets.QMainWindow):
         self.setCentralWidget(central)
         central.setStyleSheet(f"background-color: {book_color};")
 
-        outer = QtWidgets.QVBoxLayout(central)
+        # Single grid layout — all layers occupy the same cell so nothing
+        # steals vertical space from the page number.
+        outer = QtWidgets.QGridLayout(central)
         outer.setContentsMargins(10, 10, 10, 10)
-        outer.setSpacing(4)
+        outer.setSpacing(0)
 
-        # --- Main content area: page number (centered) + posture icon (right overlay) ---
+        # --- Page number / dial overlay (centred, full window) ---
         pad_px = int(10 * self.scale_factor)
 
-        # Use a grid so the page number spans the full width (centered)
-        # while the posture icon overlays from the right edge.
-        content = QtWidgets.QGridLayout()
-        content.setContentsMargins(0, 0, 0, 0)
-        content.setSpacing(0)
-
-        # Page number / dial overlay — spans the full width
         stacked = QtWidgets.QStackedWidget()
 
         self.page_label = QtWidgets.QLabel("1")
@@ -1090,17 +1085,9 @@ class MainDisplay(QtWidgets.QMainWindow):
         stacked.setCurrentIndex(0)
         self.stacked = stacked
 
-        content.addWidget(stacked, 0, 0)
+        outer.addWidget(stacked, 0, 0)
 
-        # Posture icon — overlays the right portion of the same cell.
-        # Positioned at half the distance from the old icon centre to the
-        # right edge, so it sits closer to the margin than before.
-        #
-        # Old layout: icon panel was 1/4 of the width, icon centred in it,
-        # so the icon centre was ~1/8 of the width from the right edge.
-        # "Half the distance to the right edge" puts the centre at ~1/16
-        # from the edge.  We approximate that with a small right margin
-        # on the icon panel.
+        # --- Posture icon (overlays right side of the same cell) ---
         icon_margin_r = int(40 * self.scale_factor)
 
         right_panel = QtWidgets.QWidget()
@@ -1117,14 +1104,9 @@ class MainDisplay(QtWidgets.QMainWindow):
         self.right_layout.addWidget(self.icon_label)  # index 1
         self.right_layout.addStretch(1)        # index 2: bottom spacer
 
-        # Place in same cell (0,0) so it overlays; align to right edge
-        content.addWidget(right_panel, 0, 0, QtCore.Qt.AlignRight)
+        outer.addWidget(right_panel, 0, 0, QtCore.Qt.AlignRight)
 
-        outer.addLayout(content, stretch=1)
-
-        # --- Bottom bar: settings button (bottom-right, never blocked by icon) ---
-        bottom_layout = QtWidgets.QHBoxLayout()
-        bottom_layout.addStretch()
+        # --- Settings button (overlays bottom-right corner) ---
         self.settings_btn = QtWidgets.QPushButton("⚙")
         self.settings_btn.setFont(QtGui.QFont("sans-serif", 18))
         self.settings_btn.setFixedSize(50, 50)
@@ -1134,8 +1116,10 @@ class MainDisplay(QtWidgets.QMainWindow):
             " QPushButton:pressed { background-color: rgba(255,255,255,0.3); }"
         )
         self.settings_btn.clicked.connect(self._open_settings)
-        bottom_layout.addWidget(self.settings_btn)
-        outer.addLayout(bottom_layout)
+        outer.addWidget(
+            self.settings_btn, 0, 0,
+            QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight,
+        )
 
         self.showFullScreen()
 
