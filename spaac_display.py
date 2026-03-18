@@ -1059,13 +1059,16 @@ class MainDisplay(QtWidgets.QMainWindow):
         outer.setContentsMargins(10, 10, 10, 10)
         outer.setSpacing(4)
 
-        # --- Main content row: page number (left) + posture icon (right) ---
-        content = QtWidgets.QHBoxLayout()
-        content.setSpacing(8)
-
-        # Left panel: large page number
+        # --- Main content area: page number (centered) + posture icon (right overlay) ---
         pad_px = int(10 * self.scale_factor)
 
+        # Use a grid so the page number spans the full width (centered)
+        # while the posture icon overlays from the right edge.
+        content = QtWidgets.QGridLayout()
+        content.setContentsMargins(0, 0, 0, 0)
+        content.setSpacing(0)
+
+        # Page number / dial overlay — spans the full width
         stacked = QtWidgets.QStackedWidget()
 
         self.page_label = QtWidgets.QLabel("1")
@@ -1087,23 +1090,36 @@ class MainDisplay(QtWidgets.QMainWindow):
         stacked.setCurrentIndex(0)
         self.stacked = stacked
 
-        content.addWidget(stacked, stretch=3)
+        content.addWidget(stacked, 0, 0)
 
-        # Right panel: posture icon, vertically positioned (stand=top, sit=mid, kneel=bottom)
+        # Posture icon — overlays the right portion of the same cell.
+        # Positioned at half the distance from the old icon centre to the
+        # right edge, so it sits closer to the margin than before.
+        #
+        # Old layout: icon panel was 1/4 of the width, icon centred in it,
+        # so the icon centre was ~1/8 of the width from the right edge.
+        # "Half the distance to the right edge" puts the centre at ~1/16
+        # from the edge.  We approximate that with a small right margin
+        # on the icon panel.
+        icon_margin_r = int(40 * self.scale_factor)
+
         right_panel = QtWidgets.QWidget()
+        right_panel.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
         self.right_layout = QtWidgets.QVBoxLayout(right_panel)
-        self.right_layout.setContentsMargins(0, 0, 0, 0)
+        self.right_layout.setContentsMargins(0, 0, icon_margin_r, 0)
         self.right_layout.setSpacing(0)
 
         self.icon_label = QtWidgets.QLabel()
-        self.icon_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.icon_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.icon_label.hide()
 
         self.right_layout.addStretch(1)        # index 0: top spacer
         self.right_layout.addWidget(self.icon_label)  # index 1
         self.right_layout.addStretch(1)        # index 2: bottom spacer
 
-        content.addWidget(right_panel, stretch=1)
+        # Place in same cell (0,0) so it overlays; align to right edge
+        content.addWidget(right_panel, 0, 0, QtCore.Qt.AlignRight)
+
         outer.addLayout(content, stretch=1)
 
         # --- Bottom bar: settings button (bottom-right, never blocked by icon) ---
