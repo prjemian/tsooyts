@@ -144,8 +144,10 @@ def _colorize_pixmap(pixmap, color):
         pixmap = QtGui.QPixmap.fromImage(pixmap)
 
     colored = QtGui.QPixmap(pixmap.size())
-    colored.fill(color)
+    colored.fill(QtCore.Qt.transparent)
     painter = QtGui.QPainter(colored)
+    painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
+    painter.fillRect(colored.rect(), color)
     painter.setCompositionMode(QtGui.QPainter.CompositionMode_DestinationIn)
     painter.drawPixmap(0, 0, pixmap)
     painter.end()
