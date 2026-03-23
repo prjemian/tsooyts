@@ -24,6 +24,11 @@ dependencies = [
     "evdev",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
 [project.scripts]
 tsooyts = "tsooyts.display:main"
 
