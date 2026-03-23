@@ -396,6 +396,7 @@ class SettingsDialog(QtWidgets.QDialog):
         self.tabs.addTab(self._build_colors_tab(), "Colors")
         self.tabs.addTab(self._build_teach_tab(), "Teach")
         self.tabs.addTab(self._build_test_tab(), "Test")
+        self.tabs.addTab(self._build_about_tab(), "About")
 
         # --- Save / Cancel ---
         btn_layout = QtWidgets.QHBoxLayout()
@@ -668,6 +669,73 @@ class SettingsDialog(QtWidgets.QDialog):
             " border-radius: 6px; padding: 10px;"
         )
         layout.addWidget(self.test_function_label)
+
+        layout.addStretch()
+        return page
+
+    def _build_about_tab(self):
+        """Build the About tab: app name, author, version, and QR code."""
+        from tsooyts import __version__
+
+        page = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(page)
+        layout.setSpacing(8)
+
+        sf = self.scale_factor
+
+        layout.addStretch()
+
+        # App name
+        name_label = QtWidgets.QLabel("tsooyts (ցույց)")
+        name_label.setFont(
+            QtGui.QFont("sans-serif", int(22 * sf), QtGui.QFont.Bold)
+        )
+        name_label.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(name_label)
+
+        # Description
+        desc_label = QtWidgets.QLabel("Electronic Page Display")
+        desc_label.setFont(QtGui.QFont("sans-serif", int(12 * sf)))
+        desc_label.setAlignment(QtCore.Qt.AlignCenter)
+        desc_label.setStyleSheet("color: #555;")
+        layout.addWidget(desc_label)
+
+        # Version
+        version_label = QtWidgets.QLabel(f"Version {__version__}")
+        version_label.setFont(QtGui.QFont("monospace", int(11 * sf)))
+        version_label.setAlignment(QtCore.Qt.AlignCenter)
+        version_label.setStyleSheet("color: #888; margin-top: 4px;")
+        layout.addWidget(version_label)
+
+        # Author
+        author_label = QtWidgets.QLabel("Pete Jemian")
+        author_label.setFont(QtGui.QFont("sans-serif", int(11 * sf)))
+        author_label.setAlignment(QtCore.Qt.AlignCenter)
+        author_label.setStyleSheet("color: #555; margin-top: 8px;")
+        layout.addWidget(author_label)
+
+        layout.addSpacing(int(12 * sf))
+
+        # QR code
+        qr_path = ICON_DIR / "qr_repo.png"
+        qr_pixmap = QtGui.QPixmap(str(qr_path))
+        if not qr_pixmap.isNull():
+            qr_size = int(140 * sf)
+            scaled = qr_pixmap.scaled(
+                QtCore.QSize(qr_size, qr_size),
+                QtCore.Qt.KeepAspectRatio,
+                QtCore.Qt.SmoothTransformation,
+            )
+            qr_label = QtWidgets.QLabel()
+            qr_label.setPixmap(scaled)
+            qr_label.setAlignment(QtCore.Qt.AlignCenter)
+            layout.addWidget(qr_label)
+
+            qr_caption = QtWidgets.QLabel("github.com/prjemian/tsooyts")
+            qr_caption.setFont(QtGui.QFont("monospace", int(9 * sf)))
+            qr_caption.setAlignment(QtCore.Qt.AlignCenter)
+            qr_caption.setStyleSheet("color: #888;")
+            layout.addWidget(qr_caption)
 
         layout.addStretch()
         return page

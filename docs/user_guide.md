@@ -128,8 +128,7 @@ without losing the current page number.
 
 Click the gear button in the lower-right corner of the screen to open the
 settings dialog.  Use the touchscreen or a USB mouse.  The dialog is organized
-into
-four tabs: **Settings**, **Colors**, **Teach**, and **Test**.
+into five tabs: **Settings**, **Colors**, **Teach**, **Test**, and **About**.
 
 **Save** (at the bottom of the dialog) stores all changes across every tab and
 closes the dialog.  **Cancel** discards all changes.
@@ -204,7 +203,12 @@ The Test tab lets you verify your button assignments without changing any pages.
 3. The tab shows:
    - The raw scancode received.
    - The function it is mapped to (green) or **UNMAPPED** (red) if the button
-     has not been assigned.
+      has not been assigned.
+
+### About tab
+
+The About tab shows the application name (tsooyts / ցույց), version number,
+author, and a QR code linking to the project's GitHub repository.
 
 ---
 
