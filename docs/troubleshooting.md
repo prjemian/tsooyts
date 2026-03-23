@@ -1,4 +1,4 @@
-# SPAAC Page Display — Troubleshooting Guide
+# Tsooyts Page Display — Troubleshooting Guide
 
 ---
 
@@ -174,8 +174,8 @@ in the app.
 ## Service Does Not Start
 
 ```bash
-sudo systemctl status spaac.service
-sudo journalctl -u spaac.service -n 50
+sudo systemctl status tsooyts.service
+sudo journalctl -u tsooyts.service -n 50
 ```
 
 Common causes and fixes:
@@ -191,7 +191,7 @@ Common causes and fixes:
 To test the service command manually (as the pi user, with a display):
 
 ```bash
-DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority python3 /home/pi/Documents/show_page/spaac_display.py
+DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority python3 /home/pi/Documents/tsooyts/tsooyts_display.py
 ```
 
 ---
@@ -235,12 +235,12 @@ is by design — the operator sets the page number at the start of each service.
 
 ### Settings are lost after reboot
 
-Check that `~/.spaac/config.json` and `~/.spaac/keymap.json` are present and
+Check that `~/.tsooyts/config.json` and `~/.tsooyts/keymap.json` are present and
 writable:
 
 ```bash
-ls -la ~/.spaac/
-cat ~/.spaac/keymap.json
+ls -la ~/.tsooyts/
+cat ~/.tsooyts/keymap.json
 ```
 
 If the files are missing, run the app once manually and open Settings > Save to
@@ -292,10 +292,10 @@ cat /proc/interrupts | grep ir
 sudo dmesg | grep -i 'rc\|ir_\|gpio_ir'
 
 # Service status
-sudo systemctl status spaac.service
+sudo systemctl status tsooyts.service
 
 # Service logs
-sudo journalctl -u spaac.service -n 50 --no-pager
+sudo journalctl -u tsooyts.service -n 50 --no-pager
 
 # Check user groups
 groups pi

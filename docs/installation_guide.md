@@ -1,4 +1,4 @@
-# SPAAC Page Display — Installation Guide
+# Tsooyts Page Display — Installation Guide
 
 This guide covers assembling the hardware, flashing the Raspberry Pi, configuring
 the operating system, and deploying the application so it starts automatically on
@@ -102,7 +102,7 @@ Install the official Raspberry Pi Imager on your desktop/laptop:
 
 Click the **gear icon** (Advanced options) in Raspberry Pi Imager and set:
 
-- **Hostname:** e.g., `page` or `spaac`
+- **Hostname:** e.g., `tsooyts`
 - **Enable SSH:** yes (password authentication)
 - **Username:** `pi`  (or your preferred name — adjust file paths below accordingly)
 - **Password:** set a strong password
@@ -306,22 +306,22 @@ Select device `gpio_ir_recv` and press any button on the remote.  You should see
 ### Copy the Files
 
 ```bash
-mkdir -p /home/pi/Documents/show_page
-cp spaac_display.py /home/pi/Documents/show_page/
-cp Ararat-and-Khor-Virap.png /home/pi/Documents/show_page/
+mkdir -p /home/pi/Documents/tsooyts
+cp tsooyts_display.py /home/pi/Documents/tsooyts/
+cp Ararat-and-Khor-Virap.png /home/pi/Documents/tsooyts/
 ```
 
 Or clone the repository directly:
 
 ```bash
 cd /home/pi/Documents
-git clone https://github.com/prjemian/show_page.git
+git clone https://github.com/prjemian/tsooyts.git
 ```
 
 ### Make the Script Executable
 
 ```bash
-chmod +x /home/pi/Documents/show_page/spaac_display.py
+chmod +x /home/pi/Documents/tsooyts/tsooyts_display.py
 ```
 
 ### Set Desktop Wallpaper
@@ -345,7 +345,7 @@ nano ~/.config/pcmanfm/LXDE-pi/desktop-items-0.conf
 Change the wallpaper line:
 
 ```ini
-wallpaper=/home/pi/Documents/show_page/Ararat-and-Khor-Virap.png
+wallpaper=/home/pi/Documents/tsooyts/Ararat-and-Khor-Virap.png
 ```
 
 ### Test the Application Manually
@@ -353,7 +353,7 @@ wallpaper=/home/pi/Documents/show_page/Ararat-and-Khor-Virap.png
 With a display connected, run:
 
 ```bash
-DISPLAY=:0 python3 /home/pi/Documents/show_page/spaac_display.py
+DISPLAY=:0 python3 /home/pi/Documents/tsooyts/tsooyts_display.py
 ```
 
 The app should open full-screen.  Press Escape to quit.  If it works, proceed
@@ -366,13 +366,13 @@ to set up the service.
 ### Install the Service File
 
 ```bash
-sudo cp spaac.service /etc/systemd/system/spaac.service
+sudo cp tsooyts.service /etc/systemd/system/tsooyts.service
 ```
 
 Open the file and verify the paths and username match your installation:
 
 ```bash
-sudo nano /etc/systemd/system/spaac.service
+sudo nano /etc/systemd/system/tsooyts.service
 ```
 
 Key lines to check:
@@ -381,21 +381,21 @@ Key lines to check:
 User=pi
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/pi/.Xauthority
-ExecStart=/usr/bin/python3 /home/pi/Documents/show_page/spaac_display.py
+ExecStart=/usr/bin/python3 /home/pi/Documents/tsooyts/tsooyts_display.py
 ```
 
 ### Enable and Start the Service
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable spaac.service
-sudo systemctl start spaac.service
+sudo systemctl enable tsooyts.service
+sudo systemctl start tsooyts.service
 ```
 
 Check status:
 
 ```bash
-sudo systemctl status spaac.service
+sudo systemctl status tsooyts.service
 ```
 
 The service starts after the graphical desktop (`graphical.target`) is ready,
@@ -408,7 +408,7 @@ systemd automatically restarts it after 5 seconds.
 sudo reboot
 ```
 
-The display should show the SPAAC page number screen within about 30 seconds of
+The display should show the tsooyts page number screen within about 30 seconds of
 power-on, with no login required.
 
 ---
@@ -425,7 +425,7 @@ sudo raspi-config
 ```
 
 Ensure the Pi logs in automatically to the desktop so the `DISPLAY=:0` X session
-is available when the spaac service starts.
+is available when the tsooyts service starts.
 
 ---
 
@@ -438,4 +438,4 @@ After the app is running, teach it your remote's buttons:
 3. Follow the [Teach tab instructions](user_guide.md#teach-tab) in the User Guide.
 4. Tap **Save**.
 
-The key mapping is saved to `~/.spaac/keymap.json` and persists across reboots.
+The key mapping is saved to `~/.tsooyts/keymap.json` and persists across reboots.

@@ -1,4 +1,4 @@
-# AI Agent advice for hklpy2
+# AI Agent advice for tsooyts
 
 <https://agents.md>
 

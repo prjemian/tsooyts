@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Tsooyts (ցույց) Electronic Page Display
+tsooyts (ցույց) Electronic Page Display
 
 Displays page numbers and posture cues for church congregation.
 
 Controlled via IR remote through evdev (EV_MSC/MSC_SCAN scancodes).
-
-Created for St Paul Armenian Apostolic Church (SPAAC), Waukegan, IL.
 """
 
 import json
@@ -17,6 +15,7 @@ import time
 from pathlib import Path
 
 import evdev
+from evdev import ecodes
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
@@ -233,8 +232,8 @@ class IRReader(QtCore.QObject):
                         continue
                     for event in self._device.read():
                         if (
-                            event.type == evdev.ecodes.EV_MSC
-                            and event.code == evdev.ecodes.MSC_SCAN
+                            event.type == ecodes.EV_MSC
+                            and event.code == ecodes.MSC_SCAN
                         ):
                             self._debounced_emit(event.value)
             except OSError:
@@ -1002,7 +1001,7 @@ class MainDisplay(QtWidgets.QMainWindow):
 
     def _build_ui(self):
         """Construct and lay out all widgets for the full-screen display."""
-        self.setWindowTitle("Tsooyts Page Display")
+        self.setWindowTitle("tsooyts Page Display")
 
         book_color = self.config.get("book_color", "#1a3a5c")
         text_color = self.config.get("text_color", "#f0e6c8")
