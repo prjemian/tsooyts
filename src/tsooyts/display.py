@@ -596,6 +596,7 @@ class SettingsDialog(QtWidgets.QDialog):
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
         scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 
         scroll_content = QtWidgets.QWidget()
         columns_layout = QtWidgets.QHBoxLayout(scroll_content)
@@ -620,6 +621,8 @@ class SettingsDialog(QtWidgets.QDialog):
 
         scroll.setWidget(scroll_content)
         layout.addWidget(scroll, stretch=1)
+
+        layout.addSpacing(int(16 * sf))
 
         # Clear All button
         clear_all_btn = QtWidgets.QPushButton("Clear All Mappings")
@@ -853,6 +856,17 @@ class SettingsDialog(QtWidgets.QDialog):
     def _clear_all_mappings(self):
         """Remove all scancode-to-function mappings and reset all scancode labels."""
         self._stop_listening()
+
+        reply = QtWidgets.QMessageBox.question(
+            self,
+            "Clear All Mappings",
+            "Are you sure you want to clear all button mappings?\n\n"
+            "You will need to re-teach every button.",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+            QtWidgets.QMessageBox.No,
+        )
+        if reply != QtWidgets.QMessageBox.Yes:
+            return
 
         self.keymap.clear()
         self.reverse_map.clear()
