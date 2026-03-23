@@ -6,14 +6,27 @@ display is controlled by a TV remote held by an altar server.
 
 ## Contents
 
-- [The Display Screen](#the-display-screen)
-- [Remote Control Buttons](#remote-control-buttons)
-- [Changing Pages](#changing-pages)
-- [Posture Cues](#posture-cues)
-- [Blank Screen](#blank-screen)
-- [Settings](#settings)
-- [Configuration Files](#configuration-files)
-- [Stopping the App](#stopping-the-app)
+- [Tsooyts Page Display — User Guide](#tsooyts-page-display--user-guide)
+  - [Contents](#contents)
+  - [The Display Screen](#the-display-screen)
+  - [Remote Control Buttons](#remote-control-buttons)
+  - [Changing Pages](#changing-pages)
+    - [Step by step](#step-by-step)
+    - [Dialing a page number directly](#dialing-a-page-number-directly)
+  - [Posture Cues](#posture-cues)
+  - [Blank Screen](#blank-screen)
+  - [Settings](#settings)
+    - [Settings tab](#settings-tab)
+      - [Repeat Delay](#repeat-delay)
+      - [Repeat Rate](#repeat-rate)
+      - [Posture Display Duration](#posture-display-duration)
+    - [Colors tab](#colors-tab)
+    - [Teach tab](#teach-tab)
+    - [Test tab](#test-tab)
+    - [Recognize tab](#recognize-tab)
+    - [About tab](#about-tab)
+  - [Configuration Files](#configuration-files)
+  - [Stopping the App](#stopping-the-app)
 
 ---
 
@@ -208,7 +221,6 @@ The Test tab lets you verify your button assignments without changing any pages.
 
 ### Recognize tab
 
-<!-- TODO: replace with updated screenshot -->
 > ![Recognize tab](screenshots/recognize_mode.png)
 
 The Recognize tab lets you switch between previously taught remotes without
