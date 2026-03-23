@@ -6,14 +6,27 @@ display is controlled by a TV remote held by an altar server.
 
 ## Contents
 
-- [The Display Screen](#the-display-screen)
-- [Remote Control Buttons](#remote-control-buttons)
-- [Changing Pages](#changing-pages)
-- [Posture Cues](#posture-cues)
-- [Blank Screen](#blank-screen)
-- [Settings](#settings)
-- [Configuration Files](#configuration-files)
-- [Stopping the App](#stopping-the-app)
+- [Tsooyts Page Display — User Guide](#tsooyts-page-display--user-guide)
+  - [Contents](#contents)
+  - [The Display Screen](#the-display-screen)
+  - [Remote Control Buttons](#remote-control-buttons)
+  - [Changing Pages](#changing-pages)
+    - [Step by step](#step-by-step)
+    - [Dialing a page number directly](#dialing-a-page-number-directly)
+  - [Posture Cues](#posture-cues)
+  - [Blank Screen](#blank-screen)
+  - [Settings](#settings)
+    - [Settings tab](#settings-tab)
+      - [Repeat Delay](#repeat-delay)
+      - [Repeat Rate](#repeat-rate)
+      - [Posture Display Duration](#posture-display-duration)
+    - [Colors tab](#colors-tab)
+    - [Teach tab](#teach-tab)
+    - [Test tab](#test-tab)
+    - [Recognize tab](#recognize-tab)
+    - [About tab](#about-tab)
+  - [Configuration Files](#configuration-files)
+  - [Stopping the App](#stopping-the-app)
 
 ---
 
@@ -128,7 +141,8 @@ without losing the current page number.
 
 Click the gear button in the lower-right corner of the screen to open the
 settings dialog.  Use the touchscreen or a USB mouse.  The dialog is organized
-into five tabs: **Settings**, **Colors**, **Teach**, **Test**, and **About**.
+into six tabs: **Settings**, **Colors**, **Teach**, **Test**, **Recognize**, and
+**About**.
 
 **Save** (at the bottom of the dialog) stores all changes across every tab and
 closes the dialog.  **Cancel** discards all changes.
@@ -205,6 +219,25 @@ The Test tab lets you verify your button assignments without changing any pages.
    - The function it is mapped to (green) or **UNMAPPED** (red) if the button
       has not been assigned.
 
+### Recognize tab
+
+> ![Recognize tab](screenshots/recognize_mode.png)
+
+The Recognize tab lets you switch between previously taught remotes without
+re-teaching all buttons.
+
+1. Switch to the **Recognize** tab.
+2. Press several buttons on the remote you want to use.
+3. The tab collects the scancodes and ranks all known remotes by how many
+   buttons match.
+4. Select the best match from the results list.
+5. Click **Use Selected Remote** to load that remote's button mappings.
+6. Click **Save** to keep the change.
+
+Each time you save from the Teach tab, the current keymap is automatically
+stored in the remotes library (`~/.tsooyts/remotes.json`).  Use **Reset** to
+clear the collected scancodes and start over.
+
 ### About tab
 
 The About tab shows the application name (tsooyts / ցույց), version number,
@@ -219,7 +252,8 @@ The app saves its state automatically to:
 | File | Contents |
 |------|----------|
 | `~/.tsooyts/config.json` | Repeat timing, posture duration, colors |
-| `~/.tsooyts/keymap.json` | Remote button → function mappings |
+| `~/.tsooyts/keymap.json` | Active remote button → function mappings |
+| `~/.tsooyts/remotes.json` | Library of all taught remote keymaps |
 
 These files are created on first run.  You can back them up or copy them
 to another unit to replicate settings.

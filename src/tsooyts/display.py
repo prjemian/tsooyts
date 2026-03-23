@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from uuid import uuid4
 
 import evdev
 from PyQt5 import QtCore
@@ -28,7 +29,54 @@ from PyQt5 import QtWidgets
 CONFIG_DIR = Path.home() / ".tsooyts"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 KEYMAP_FILE = CONFIG_DIR / "keymap.json"
+REMOTES_FILE = CONFIG_DIR / "remotes.json"
 ICON_DIR = Path(__file__).parent / "icons"
+
+# Built-in remote mappings (merged into remotes.json on first run)
+DEFAULT_REMOTES = {
+    "Hauppauge!": {
+        "7703": "page_up",
+        "7702": "page_down",
+        "7700": "stand",
+        "7701": "kneel",
+        "7733": "sit",
+        "7717": "enter",
+        "7680": "digit_0",
+        "7681": "digit_1",
+        "7682": "digit_2",
+        "7683": "digit_3",
+        "7684": "digit_4",
+        "7685": "digit_5",
+        "7686": "digit_6",
+        "7687": "digit_7",
+        "7688": "digit_8",
+        "7689": "digit_9",
+        "7711": "backspace",
+        "7716": "cancel",
+        "7741": "blank",
+    },
+    "Coby RC-057": {
+        "1040": "digit_0",
+        "1041": "digit_1",
+        "1042": "digit_2",
+        "1043": "digit_3",
+        "1044": "digit_4",
+        "1045": "digit_5",
+        "1046": "digit_6",
+        "1047": "digit_7",
+        "1048": "digit_8",
+        "1049": "digit_9",
+        "1096": "page_up",
+        "1095": "page_down",
+        "1093": "stand",
+        "1094": "kneel",
+        "1038": "sit",
+        "1032": "blank",
+        "1092": "enter",
+        "1050": "backspace",
+        "1097": "cancel",
+    },
+}
 
 DEFAULT_CONFIG = {
     "repeat_delay_ms": 500,  # ms before key repeat begins
@@ -343,19 +391,21 @@ class SettingsDialog(QtWidgets.QDialog):
         Test      – press a remote button and see its mapped function
     """
 
-    def __init__(self, config, keymap, ir_reader, parent=None):
+    def __init__(self, config, keymap, remotes, ir_reader, parent=None):
         """
         Initialize SettingsDialog.
 
         Args:
             config: Configuration dict with timing and color values.
             keymap: Dict mapping scancode strings to function names.
+            remotes: Dict mapping remote names to their keymap dicts.
             ir_reader: IRReader instance for Teach / Test tabs.
             parent: Optional parent QWidget.
         """
         super().__init__(parent)
         self.config = dict(config)
         self.keymap = dict(keymap)
+        self.remotes = {k: dict(v) for k, v in remotes.items()}
         self.ir_reader = ir_reader
 
         # Reverse map for teach tab
@@ -396,6 +446,7 @@ class SettingsDialog(QtWidgets.QDialog):
         self.tabs.addTab(self._build_colors_tab(), "Colors")
         self.tabs.addTab(self._build_teach_tab(), "Teach")
         self.tabs.addTab(self._build_test_tab(), "Test")
+        self.tabs.addTab(self._build_recognize_tab(), "Recognize")
         self.tabs.addTab(self._build_about_tab(), "About")
 
         # --- Save / Cancel ---
@@ -743,6 +794,204 @@ class SettingsDialog(QtWidgets.QDialog):
         layout.addStretch()
         return page
 
+    def _build_recognize_tab(self):
+        """Build the Recognize tab: press buttons to identify a known remote."""
+        page = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(page)
+        layout.setSpacing(8)
+
+        sf = self.scale_factor
+
+        instructions = QtWidgets.QLabel(
+            "Press several buttons on the remote.\n"
+            "Known remotes will be ranked by how many\n"
+            "buttons match."
+        )
+        instructions.setFont(QtGui.QFont("sans-serif", int(10 * sf)))
+        instructions.setAlignment(QtCore.Qt.AlignCenter)
+        instructions.setWordWrap(True)
+        instructions.setStyleSheet("color: #555;")
+        layout.addWidget(instructions)
+
+        n_remotes = len(self.remotes)
+        count_label = QtWidgets.QLabel(f"{n_remotes} remote(s) in library")
+        count_label.setFont(QtGui.QFont("sans-serif", int(9 * sf)))
+        count_label.setAlignment(QtCore.Qt.AlignCenter)
+        count_label.setStyleSheet("color: #888;")
+        layout.addWidget(count_label)
+
+        # Collected scancodes display
+        self.recog_scancodes_label = QtWidgets.QLabel("Scancodes: (none)")
+        self.recog_scancodes_label.setFont(QtGui.QFont("monospace", int(10 * sf)))
+        self.recog_scancodes_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.recog_scancodes_label.setWordWrap(True)
+        self.recog_scancodes_label.setStyleSheet(
+            "background-color: #fff; border: 1px solid #ccc;"
+            " border-radius: 6px; padding: 6px;"
+        )
+        layout.addWidget(self.recog_scancodes_label)
+
+        # Results area (scroll)
+        self.recog_results_layout = QtWidgets.QVBoxLayout()
+        self.recog_results_layout.setSpacing(4)
+
+        results_widget = QtWidgets.QWidget()
+        results_widget.setLayout(self.recog_results_layout)
+
+        scroll = QtWidgets.QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setWidget(results_widget)
+        layout.addWidget(scroll, stretch=1)
+
+        # Status label
+        self.recog_status_label = QtWidgets.QLabel("")
+        self.recog_status_label.setFont(QtGui.QFont("sans-serif", int(10 * sf)))
+        self.recog_status_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.recog_status_label.setMinimumHeight(int(24 * sf))
+        self.recog_status_label.setStyleSheet(
+            "color: #ffffff; background-color: #444;"
+            " border-radius: 6px; padding: 3px;"
+        )
+        layout.addWidget(self.recog_status_label)
+
+        # Reset / Use buttons
+        btn_row = QtWidgets.QHBoxLayout()
+
+        reset_btn = QtWidgets.QPushButton("Reset")
+        reset_btn.setFont(QtGui.QFont("sans-serif", int(11 * sf)))
+        reset_btn.setMinimumHeight(int(34 * sf))
+        reset_btn.clicked.connect(self._reset_recognize)
+        btn_row.addWidget(reset_btn)
+
+        self.recog_use_btn = QtWidgets.QPushButton("Use Selected Remote")
+        self.recog_use_btn.setFont(QtGui.QFont("sans-serif", int(11 * sf)))
+        self.recog_use_btn.setMinimumHeight(int(34 * sf))
+        self.recog_use_btn.setEnabled(False)
+        self.recog_use_btn.clicked.connect(self._use_recognized_remote)
+        btn_row.addWidget(self.recog_use_btn)
+
+        layout.addLayout(btn_row)
+
+        # State
+        self._recog_scancodes = set()
+        self._recog_selected_name = None
+
+        return page
+
+    def _reset_recognize(self):
+        """Clear collected scancodes and results."""
+        self._recog_scancodes.clear()
+        self._recog_selected_name = None
+        self.recog_scancodes_label.setText("Scancodes: (none)")
+        self.recog_use_btn.setEnabled(False)
+        self.recog_status_label.setText("")
+        self.recog_status_label.setStyleSheet(
+            "color: #ffffff; background-color: #444;"
+            " border-radius: 6px; padding: 3px;"
+        )
+        # Clear results
+        while self.recog_results_layout.count():
+            item = self.recog_results_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+    def _update_recognize_results(self):
+        """Score each known remote against collected scancodes and display results."""
+        sf = self.scale_factor
+
+        # Clear existing results
+        while self.recog_results_layout.count():
+            item = self.recog_results_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+        if not self._recog_scancodes or not self.remotes:
+            return
+
+        # Score each remote: count how many of the pressed scancodes it knows
+        scores = []
+        for name, stored_map in self.remotes.items():
+            stored_scancodes = set(stored_map.keys())
+            hits = self._recog_scancodes & stored_scancodes
+            total = len(stored_scancodes)
+            scores.append((len(hits), total, name))
+
+        scores.sort(key=lambda x: x[0], reverse=True)
+
+        self._recog_selected_name = None
+        self.recog_use_btn.setEnabled(False)
+
+        for hits, total, name in scores:
+            if hits == 0:
+                continue
+
+            short_name = name[:12] + "..." if len(name) > 15 else name
+            text = f"{short_name}: {hits}/{total} buttons matched"
+            btn = QtWidgets.QPushButton(text)
+            btn.setFont(QtGui.QFont("sans-serif", int(10 * sf)))
+            btn.setMinimumHeight(int(30 * sf))
+            btn.setCheckable(True)
+            btn.setStyleSheet(
+                "QPushButton { text-align: left; padding: 6px;"
+                " border: 1px solid #ccc; border-radius: 4px; }"
+                " QPushButton:checked { background-color: #d4edda;"
+                " border-color: #28a745; font-weight: bold; }"
+            )
+            btn.setProperty("remote_name", name)
+            btn.clicked.connect(lambda checked, n=name: self._select_remote(n))
+            self.recog_results_layout.addWidget(btn)
+
+        if scores and scores[0][0] > 0:
+            best_name = scores[0][2]
+            short = best_name[:12] + "..." if len(best_name) > 15 else best_name
+            self.recog_status_label.setText(f"Best match: {short}")
+            self.recog_status_label.setStyleSheet(
+                "color: #fff; background-color: #2e8b57;"
+                " border-radius: 6px; padding: 3px;"
+            )
+
+    def _select_remote(self, name):
+        """Mark a remote as selected for use."""
+        self._recog_selected_name = name
+        self.recog_use_btn.setEnabled(True)
+
+        # Uncheck all buttons except the selected one
+        for i in range(self.recog_results_layout.count()):
+            item = self.recog_results_layout.itemAt(i)
+            if item and item.widget():
+                btn = item.widget()
+                btn.setChecked(btn.property("remote_name") == name)
+
+    def _use_recognized_remote(self):
+        """Load the selected remote's keymap as the active keymap."""
+        if self._recog_selected_name is None:
+            return
+
+        name = self._recog_selected_name
+        stored_map = self.remotes.get(name)
+        if not stored_map:
+            return
+
+        self.keymap = dict(stored_map)
+
+        # Rebuild reverse map
+        self.reverse_map.clear()
+        for sc, fn in self.keymap.items():
+            self.reverse_map[fn] = sc
+
+        # Update Teach tab scancode labels
+        for fn, widgets in self._row_widgets.items():
+            sc = self.reverse_map.get(fn, "—")
+            widgets["sc_label"].setText(sc)
+
+        short = name[:12] + "..." if len(name) > 15 else name
+        self.recog_status_label.setText(f"Loaded remote: {short}")
+        self.recog_status_label.setStyleSheet(
+            "color: #fff; background-color: #2a7ad5;"
+            " border-radius: 6px; padding: 3px;"
+        )
+
     # ---- teach helpers ----------------------------------------------------
 
     def _populate_teach_grid(self, grid, function_list):
@@ -953,6 +1202,14 @@ class SettingsDialog(QtWidgets.QDialog):
                     " color: #721c24; font-weight: bold;"
                 )
 
+        # Recognize tab (index 4): collect scancodes and match remotes
+        elif current_tab == 4:
+            sc_str = str(scancode)
+            self._recog_scancodes.add(sc_str)
+            codes = ", ".join(sorted(self._recog_scancodes))
+            self.recog_scancodes_label.setText(f"Scancodes: {codes}")
+            self._update_recognize_results()
+
     # ---- colour helpers ---------------------------------------------------
 
     def _apply_color_btn_style(self, btn, color):
@@ -1002,6 +1259,22 @@ class SettingsDialog(QtWidgets.QDialog):
         self.config["repeat_rate_ms"] = self.rate_slider.value()
         self.config["posture_duration_sec"] = self.posture_slider.value()
         self.config.update(self._color_values)
+
+        # Store the current keymap in the remotes collection.
+        # If this keymap matches an existing remote, update it in place.
+        # Otherwise, add it under a new uuid name.
+        if self.keymap:
+            current_scancodes = set(self.keymap.keys())
+            matched_name = None
+            for name, stored_map in self.remotes.items():
+                if set(stored_map.keys()) == current_scancodes:
+                    matched_name = name
+                    break
+            if matched_name:
+                self.remotes[matched_name] = dict(self.keymap)
+            else:
+                self.remotes[str(uuid4())] = dict(self.keymap)
+
         self.accept()
 
     def get_config(self):
@@ -1011,6 +1284,10 @@ class SettingsDialog(QtWidgets.QDialog):
     def get_keymap(self):
         """Return a copy of the current scancode-to-function mapping dict."""
         return dict(self.keymap)
+
+    def get_remotes(self):
+        """Return a copy of the remotes collection."""
+        return {k: dict(v) for k, v in self.remotes.items()}
 
 
 # ---------------------------------------------------------------------------
@@ -1045,6 +1322,20 @@ class MainDisplay(QtWidgets.QMainWindow):
         self.config["max_page"] = DEFAULT_CONFIG["max_page"]
 
         self.keymap = load_json(KEYMAP_FILE, {})
+        self.remotes = load_json(REMOTES_FILE, {})
+
+        # Merge built-in remotes (won't overwrite user-saved entries)
+        for name, mapping in DEFAULT_REMOTES.items():
+            if name not in self.remotes:
+                self.remotes[name] = dict(mapping)
+
+        # Ensure the active keymap is represented in the remotes library
+        if self.keymap:
+            active_scancodes = set(self.keymap.keys())
+            if not any(
+                set(m.keys()) == active_scancodes for m in self.remotes.values()
+            ):
+                self.remotes[str(uuid4())] = dict(self.keymap)
 
         # State
         self.current_page = 1
@@ -1411,10 +1702,11 @@ class MainDisplay(QtWidgets.QMainWindow):
         old_debounce = self.ir_reader.debounce_ms
         self.ir_reader.debounce_ms = IRReader.DEFAULT_DEBOUNCE_MS
 
-        dlg = SettingsDialog(self.config, self.keymap, self.ir_reader, parent=self)
+        dlg = SettingsDialog(self.config, self.keymap, self.remotes, self.ir_reader, parent=self)
         if dlg.exec_() == QtWidgets.QDialog.Accepted:
             self.config = dlg.get_config()
             self.keymap = dlg.get_keymap()
+            self.remotes = dlg.get_remotes()
 
             self.repeat_ctrl = RepeatController(
                 self.config, lookup_fn=self._lookup_function
@@ -1422,6 +1714,7 @@ class MainDisplay(QtWidgets.QMainWindow):
 
             save_json(CONFIG_FILE, self.config)
             save_json(KEYMAP_FILE, self.keymap)
+            save_json(REMOTES_FILE, self.remotes)
 
             self._update_display()
 
@@ -1429,10 +1722,11 @@ class MainDisplay(QtWidgets.QMainWindow):
         self._settings_open = False
 
     def closeEvent(self, event):
-        """Stop the IR reader and persist config/keymap on window close."""
+        """Stop the IR reader and persist config/keymap/remotes on window close."""
         self.ir_reader.stop()
         save_json(CONFIG_FILE, self.config)
         save_json(KEYMAP_FILE, self.keymap)
+        save_json(REMOTES_FILE, self.remotes)
         super().closeEvent(event)
 
     def keyPressEvent(self, event):
