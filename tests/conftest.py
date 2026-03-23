@@ -85,6 +85,20 @@ if isinstance(_qtgui, MagicMock):
 
 
 # ---------------------------------------------------------------------------
+# Detect real PyQt5 availability (before conftest stubs interfere)
+# ---------------------------------------------------------------------------
+
+import subprocess as _sp
+
+_HAS_REAL_PYQT5 = (
+    _sp.run(
+        [sys.executable, "-c", "import PyQt5"],
+        capture_output=True,
+    ).returncode
+    == 0
+)
+
+# ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
@@ -99,3 +113,31 @@ def tmp_json(tmp_path):
         return p
 
     return _write
+
+
+@pytest.fixture(scope="session")
+def qapp():
+    """Provide a QApplication instance for GUI tests (offscreen).
+
+    Returns None if PyQt5 is not installed; GUI tests should check
+    and skip accordingly.
+    """
+    if not _HAS_REAL_PYQT5:
+        yield None
+        return
+
+    import os
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+    from PyQt5 import QtWidgets
+
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        app = QtWidgets.QApplication([])
+    yield app
+
+
+requires_pyqt5 = pytest.mark.skipif(
+    not _HAS_REAL_PYQT5,
+    reason="PyQt5 not installed",
+)
