@@ -32,6 +32,52 @@ KEYMAP_FILE = CONFIG_DIR / "keymap.json"
 REMOTES_FILE = CONFIG_DIR / "remotes.json"
 ICON_DIR = Path(__file__).parent / "icons"
 
+# Built-in remote mappings (merged into remotes.json on first run)
+DEFAULT_REMOTES = {
+    "Hauppauge!": {
+        "7703": "page_up",
+        "7702": "page_down",
+        "7700": "stand",
+        "7701": "kneel",
+        "7733": "sit",
+        "7717": "enter",
+        "7680": "digit_0",
+        "7681": "digit_1",
+        "7682": "digit_2",
+        "7683": "digit_3",
+        "7684": "digit_4",
+        "7685": "digit_5",
+        "7686": "digit_6",
+        "7687": "digit_7",
+        "7688": "digit_8",
+        "7689": "digit_9",
+        "7711": "backspace",
+        "7716": "cancel",
+        "7741": "blank",
+    },
+    "Coby RC-057": {
+        "1040": "digit_0",
+        "1041": "digit_1",
+        "1042": "digit_2",
+        "1043": "digit_3",
+        "1044": "digit_4",
+        "1045": "digit_5",
+        "1046": "digit_6",
+        "1047": "digit_7",
+        "1048": "digit_8",
+        "1049": "digit_9",
+        "1096": "page_up",
+        "1095": "page_down",
+        "1093": "stand",
+        "1094": "kneel",
+        "1038": "sit",
+        "1032": "blank",
+        "1092": "enter",
+        "1050": "backspace",
+        "1097": "cancel",
+    },
+}
+
 DEFAULT_CONFIG = {
     "repeat_delay_ms": 500,  # ms before key repeat begins
     "repeat_rate_ms": 200,  # ms between repeats (5/sec)
@@ -1279,6 +1325,19 @@ class MainDisplay(QtWidgets.QMainWindow):
 
         self.keymap = load_json(KEYMAP_FILE, {})
         self.remotes = load_json(REMOTES_FILE, {})
+
+        # Merge built-in remotes (won't overwrite user-saved entries)
+        for name, mapping in DEFAULT_REMOTES.items():
+            if name not in self.remotes:
+                self.remotes[name] = dict(mapping)
+
+        # Ensure the active keymap is represented in the remotes library
+        if self.keymap:
+            active_scancodes = set(self.keymap.keys())
+            if not any(
+                set(m.keys()) == active_scancodes for m in self.remotes.values()
+            ):
+                self.remotes[str(uuid4())] = dict(self.keymap)
 
         # State
         self.current_page = 1
