@@ -35,7 +35,7 @@ DEFAULT_CONFIG = {
     "repeat_rate_ms": 200,  # ms between repeats (5/sec)
     "max_repeats_per_sec": 10,  # upper bound for settings UI
     "min_page": 1,
-    "max_page": 999,
+    "max_page": 9999,
     "book_color": "#1a3a5c",  # dark blue
     "text_color": "#f0e6c8",  # warm cream/ivory
     "posture_stand_color": "#c8a84e",
@@ -1282,7 +1282,7 @@ class MainDisplay(QtWidgets.QMainWindow):
             self._update_display()
             return
         min_p = self.config.get("min_page", 1)
-        max_p = self.config.get("max_page", 999)
+        max_p = self.config.get("max_page", 9999)
         self.current_page = max(min_p, min(max_p, self.current_page + delta))
         self._update_display()
 
@@ -1344,7 +1344,7 @@ class MainDisplay(QtWidgets.QMainWindow):
             return
 
         min_p = self.config.get("min_page", 1)
-        max_p = self.config.get("max_page", 999)
+        max_p = self.config.get("max_page", 9999)
         page = max(min_p, min(max_p, page))
 
         self.current_page = page
