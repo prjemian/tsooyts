@@ -55,7 +55,6 @@ FUNCTION_NAMES_CONTROLS = [
     "enter",  # accept dialed page
     "cancel",  # cancel dialed page (LAST or STOP)
     "backspace",  # delete last digit entered
-    "setup",  # enter setup/teach mode
 ]
 
 FUNCTION_NAMES_DIGITS = [
@@ -94,7 +93,6 @@ FUNCTION_LABELS = {
     "enter": "Enter / Accept",
     "cancel": "Cancel (LAST/STOP)",
     "backspace": "Backspace (⌫)",
-    "setup": "Setup / Teach",
 }
 
 POSTURE_NONE = ""
@@ -1188,8 +1186,6 @@ class MainDisplay(QtWidgets.QMainWindow):
             self._cancel_dial()
         elif fn == "backspace":
             self._backspace_dial()
-        elif fn == "setup":
-            self._open_settings()
 
     def _change_page(self, delta):
         """Increment or decrement the current page by delta, clamped to configured bounds.

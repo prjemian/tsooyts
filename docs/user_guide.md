@@ -42,7 +42,6 @@ are configured during initial setup (see [Teach Mode](#teach-mode)).
 | Accept | ENTER / OK | Confirm a dialed page number |
 | Cancel | LAST / STOP / BACK | Cancel a dialed page number |
 | Backspace | (configured) | Delete the last digit entered |
-| Settings | (configured) | Open the settings dialog |
 
 > **Tip:** Press the same posture button again to clear the posture icon and return
 > to the plain page display.
@@ -112,8 +111,8 @@ without losing the current page number.
 
 ## Settings
 
-Touch the gear button in the lower-right corner (or press the remote button
-mapped to "Setup") to open the settings dialog.  The dialog is organized into
+Touch the gear button in the lower-right corner of the touchscreen to open the
+settings dialog.  The dialog is organized into
 four tabs: **Settings**, **Colors**, **Teach**, and **Test**.
 
 **Save** (at the bottom of the dialog) stores all changes across every tab and
@@ -213,7 +212,6 @@ to another unit to replicate settings.
 During normal use the app runs full-screen without a window border or title bar.
 The mouse cursor is hidden.
 
-- **Remote:** Press the button assigned to **Setup** to open Settings, then use
-  the touchscreen to navigate.
+- **Touchscreen:** Tap the gear button to open Settings.
 - **Keyboard (SSH or attached keyboard):** Press **Escape** to quit.
 - **Systemd service:** `sudo systemctl stop tsooyts`
