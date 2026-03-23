@@ -4,11 +4,19 @@ These tests require PyQt5 and run with QT_QPA_PLATFORM=offscreen.
 They are skipped automatically when PyQt5 is not installed.
 """
 
+import subprocess
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tests.conftest import requires_pyqt5
+requires_pyqt5 = pytest.mark.skipif(
+    subprocess.run(
+        [sys.executable, "-c", "import PyQt5"],
+        capture_output=True,
+    ).returncode != 0,
+    reason="PyQt5 not installed",
+)
 
 
 @requires_pyqt5
