@@ -1040,6 +1040,9 @@ class MainDisplay(QtWidgets.QMainWindow):
         for k, v in DEFAULT_CONFIG.items():
             if k not in self.config:
                 self.config[k] = v
+        # Always enforce current page limits (overrides stale saved values)
+        self.config["min_page"] = DEFAULT_CONFIG["min_page"]
+        self.config["max_page"] = DEFAULT_CONFIG["max_page"]
 
         self.keymap = load_json(KEYMAP_FILE, {})
 
