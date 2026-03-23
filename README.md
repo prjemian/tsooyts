@@ -1,4 +1,4 @@
-# SPAAC Show Page Number
+# tsooyts (ցույց) — Show Page Number
 
 Electronic display to show the congregation the current page number.
 Also show when it is appropriate to stand, sit, or kneel.  A TV
@@ -31,8 +31,8 @@ and a standard TV remote.
 
 | File | Description |
 |------|-------------|
-| `spaac_display.py` | Main Python application (PyQt5 + evdev) |
-| `spaac.service` | systemd service unit — copy to `/etc/systemd/system/` |
+| `tsooyts_display.py` | Main Python application (PyQt5 + evdev) |
+| `tsooyts.service` | systemd service unit — copy to `/etc/systemd/system/` |
 | `stand.png` | Stick-figure icon for "Please Stand" posture cue (white on transparent) |
 | `sit.png`   | Stick-figure icon for "Please Be Seated" posture cue (white on transparent) |
 | `kneel.png` | Stick-figure icon for "Please Kneel" posture cue (white on transparent) |

@@ -1,7 +1,7 @@
-# SPAAC Page Display — User Guide
+# Tsooyts Page Display — User Guide
 
-The SPAAC page display system shows the current page number and congregation
-posture cues on a large screen so the entire congregation can follow along.  The
+The tsooyts page display system shows the current page number and congregation
+posture cues on a screen so the entire congregation can follow along.  The
 display is controlled by a TV remote held by an altar server.
 
 ---
@@ -200,8 +200,8 @@ The app saves its state automatically to:
 
 | File | Contents |
 |------|----------|
-| `~/.spaac/config.json` | Repeat timing, posture duration, colors |
-| `~/.spaac/keymap.json` | Remote button → function mappings |
+| `~/.tsooyts/config.json` | Repeat timing, posture duration, colors |
+| `~/.tsooyts/keymap.json` | Remote button → function mappings |
 
 These files are created on first run.  You can back them up or copy them
 to another unit to replicate settings.
@@ -216,4 +216,4 @@ The mouse cursor is hidden.
 - **Remote:** Press the button assigned to **Setup** to open Settings, then use
   the touchscreen to navigate.
 - **Keyboard (SSH or attached keyboard):** Press **Escape** to quit.
-- **Systemd service:** `sudo systemctl stop spaac`
+- **Systemd service:** `sudo systemctl stop tsooyts`

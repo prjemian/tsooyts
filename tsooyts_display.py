@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-SPAAC Electronic Page Display
+Tsooyts (ցույց) Electronic Page Display
 
 Displays page numbers and posture cues for church congregation.
 
 Controlled via IR remote through evdev (EV_MSC/MSC_SCAN scancodes).
+
+Created for St Paul Armenian Apostolic Church (SPAAC), Waukegan, IL.
 """
 
 import json
@@ -15,7 +17,6 @@ import time
 from pathlib import Path
 
 import evdev
-from evdev import ecodes
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
@@ -24,7 +25,7 @@ from PyQt5 import QtWidgets
 # Configuration defaults and paths
 # ---------------------------------------------------------------------------
 
-CONFIG_DIR = Path.home() / ".spaac"
+CONFIG_DIR = Path.home() / ".tsooyts"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 KEYMAP_FILE = CONFIG_DIR / "keymap.json"
 ICON_DIR = Path(__file__).parent
@@ -232,8 +233,8 @@ class IRReader(QtCore.QObject):
                         continue
                     for event in self._device.read():
                         if (
-                            event.type == ecodes.EV_MSC
-                            and event.code == ecodes.MSC_SCAN
+                            event.type == evdev.ecodes.EV_MSC
+                            and event.code == evdev.ecodes.MSC_SCAN
                         ):
                             self._debounced_emit(event.value)
             except OSError:
@@ -335,7 +336,7 @@ class RepeatController:
 
 
 class SettingsDialog(QtWidgets.QDialog):
-    """Tabbed settings dialog for the SPAAC page display.
+    """Tabbed settings dialog for the tsooyts page display.
 
     Tabs:
         Settings  – repeat timing, posture duration
@@ -380,7 +381,7 @@ class SettingsDialog(QtWidgets.QDialog):
         self.screen_height = screen_size.height()
         self.scale_factor = min((self.screen_height / 600.0) ** 0.7, 1.5)
 
-        self.setWindowTitle("SPAAC — Settings")
+        self.setWindowTitle("tsooyts — Settings")
         self.setModal(True)
         self.setMinimumSize(int(620 * self.scale_factor), int(420 * self.scale_factor))
 
@@ -1001,7 +1002,7 @@ class MainDisplay(QtWidgets.QMainWindow):
 
     def _build_ui(self):
         """Construct and lay out all widgets for the full-screen display."""
-        self.setWindowTitle("SPAAC Page Display")
+        self.setWindowTitle("Tsooyts Page Display")
 
         book_color = self.config.get("book_color", "#1a3a5c")
         text_color = self.config.get("text_color", "#f0e6c8")
