@@ -1344,6 +1344,12 @@ class MainDisplay(QtWidgets.QMainWindow):
 
 def main():
     """Create the Qt application, show the full-screen display, and enter the event loop."""
+    if "--version" in sys.argv:
+        from tsooyts import __version__
+
+        print(f"tsooyts {__version__}")
+        sys.exit(0)
+
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
     app = QtWidgets.QApplication(sys.argv)
