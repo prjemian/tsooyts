@@ -94,6 +94,12 @@ icon will automatically clear after that many seconds.
 > ![Stand posture](screenshots/posture_stand.png)
 > *Display showing standing icon, upper right.*
 
+> ![Sit posture](screenshots/posture_sit.png)
+> *Display showing seated icon, middle right.*
+
+> ![Kneel posture](screenshots/posture_kneel.png)
+> *Display showing kneeling icon, lower right.*
+
 ---
 
 ## Blank Screen
