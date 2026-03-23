@@ -4,7 +4,6 @@ Electronic display to show the congregation the current page number.
 Also show when it is appropriate to stand, sit, or kneel.  A TV
 remote directs the page number on the screen.
 
-<!-- TODO: replace with updated screenshot -->
 ![page 142](./docs/screenshots/main_display.png)
 
 Implemented with a Raspberry Pi, 7" touchscreen display, IR receiver,
