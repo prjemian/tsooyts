@@ -74,6 +74,23 @@ DEFAULT_REMOTES = {
         "1050": "backspace",
         "1097": "cancel",
     },
+    "DWEII HX1838 17-button": {
+        "8": "page_down",
+        "90": "page_up",
+        "28": "enter",
+        "25": "digit_0",
+        "69": "digit_1",
+        "70": "digit_2",
+        "71": "digit_3",
+        "68": "digit_4",
+        "64": "digit_5",
+        "67": "digit_6",
+        "7": "digit_7",
+        "21": "digit_8",
+        "9": "digit_9",
+        "13": "backspace",
+        "22": "cancel",
+    },
 }
 
 DEFAULT_CONFIG = {

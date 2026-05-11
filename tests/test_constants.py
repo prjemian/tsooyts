@@ -121,13 +121,16 @@ class TestDefaultRemotes:
     """Validate DEFAULT_REMOTES structure."""
 
     def test_has_two_remotes(self):
-        assert len(DEFAULT_REMOTES) == 2
-
-    def test_hauppauge_exists(self):
-        assert "Hauppauge!" in DEFAULT_REMOTES
+        assert len(DEFAULT_REMOTES) == 3
 
     def test_coby_exists(self):
         assert "Coby RC-057" in DEFAULT_REMOTES
+
+    def test_dweii_hx1838_exists(self):
+        assert "DWEII HX1838 17-button" in DEFAULT_REMOTES
+
+    def test_hauppauge_exists(self):
+        assert "Hauppauge!" in DEFAULT_REMOTES
 
     def test_all_mappings_use_valid_functions(self):
         valid = set(FUNCTION_NAMES)
